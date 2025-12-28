@@ -1,0 +1,16 @@
+backend/
+├── core/                   <-- (Quan trọng) Chứa abstract models, utils dùng chung
+├── users/                  <-- Quản lý User, Auth, JWT
+├── layers/ (hoặc maps)     <-- Thay cho 'gis_app'. Chỉ lo việc CRUD dữ liệu bản đồ
+│   ├── models.py           <-- Chứa Shapefile, Point, Polygon
+│   ├── serializers.py
+│   └── views.py            <-- Chỉ view dữ liệu (GET, POST đơn giản)
+│
+├── analysis/ (hoặc tools)  <-- Thay cho 'gis_tool'. Nơi chứa "chất xám" Automation
+│   ├── services.py         <-- Viết logic Python thuần ở đây (Scripting)
+│   ├── tasks.py            <-- (Nâng cao) Chứa Celery tasks để chạy nền
+│   └── views.py            <-- API kích hoạt tool (VD: /api/analyze/buffer/)
+│
+└── config/ (thư mục backend cũ)
+
+

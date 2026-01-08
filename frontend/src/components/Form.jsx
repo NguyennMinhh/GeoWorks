@@ -6,7 +6,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 function Form({route, method}) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [loading, setLoading] = useState("")
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
     const name = method === "login" ? "Login" : "Register"
@@ -22,7 +22,7 @@ function Form({route, method}) {
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
                 navigate("/")
             } else {
-                navigate("/login ")
+                navigate("/login")
             }
         }
         catch (error) {
@@ -31,7 +31,7 @@ function Form({route, method}) {
             setLoading(false)
         }
     }
-    return <form onSubmit={handleSubmit}  class="form-container">
+    return <form onSubmit={handleSubmit}  className="form-container">
         <h1>{name}</h1>
         <input
             className="form-input"
@@ -52,3 +52,5 @@ function Form({route, method}) {
         </button>
     </form>
 }
+
+export default Form

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, createContext } from 'react';
 import { Map, View } from "ol";
 import TileLayer from "ol/layer/Tile.js";
 import OSM from 'ol/source/OSM.js';
@@ -6,13 +6,20 @@ import XYZ from 'ol/source/XYZ.js';
 import { switchLayerVisible, searchAndZoom } from '../../hooks/useMapLayers'
 import { fromLonLat } from 'ol/proj';
 
+import MapDashboard from './MapDashboard';
+
+export const MapContext = createContext(null);
+export const ToolsContext = createContext(null);
+
 export default function BaseMap() {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const layersRef = useRef({});
+
   const [currentLayer, setCurrentLayer] = useState('osm');
   const [query, setQuery] = useState('')
   const [zoomLevel, setZoomLevel] = useState(10)
+  const [showDashboard, setShowDashboard] = useState(true);
 
   useEffect(() => {
     // Layer Satellite của Esri
@@ -69,68 +76,71 @@ export default function BaseMap() {
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '94vh' }}>
-      <div ref={mapRef} style={{ width: '100%', height: '100%' }}></div>
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        right: '20px',
-        zIndex: 1000,
-        display: 'flex',
-        gap: '10px'
-      }}>
-        <form onSubmit={handleSearch}>
-          <input 
-            type='text'
-            placeholder='Tìm kiếm địa điểm'
-            value={query}
-            onChange={(e) => {setQuery(e.target.value)}}
-          ></input>
-          <input
-            type='number'
-            value={zoomLevel}
-            max={99}
-            min={1}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value < 1 || value > 99) return;
-              setZoomLevel(Number(value))}}
-            style={{
-              width:'4ch',
-              textAlign: 'center'
-            }}
-          ></input>
-          <button type='submit'>Tìm kiếm</button>
-        </form>
-        <button
-          onClick={() => setCurrentLayer('osm')}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: currentLayer === 'osm' ? '#4CAF50' : '#ddd',
-            color: currentLayer === 'osm' ? 'white' : 'black',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          OSM
-        </button>
-        <button
-          onClick={() => setCurrentLayer('satellite')}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: currentLayer === 'satellite' ? '#4CAF50' : '#ddd',
-            color: currentLayer === 'satellite' ? 'white' : 'black',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          Satellite
-        </button>
-      </div>
-    </div>
+    <MapContext.Provider value={{ mapInstance, setCurrentLayer, currentLayer, handleSearch }}>
+      <ToolsContext.Provider value={{ query, setQuery, zoomLevel, setZoomLevel, showDashboard, setShowDashboard }}>
+        <div style={{ position: 'relative', width: '100%', height: '94vh' }}>
+          <div ref={mapRef} style={{ width: '100%', height: '100%' }}></div>
+          <div style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '4rem',
+            display: 'flex',
+          }}>
+            <form onSubmit={handleSearch}>
+              <input 
+                type='text'
+                placeholder='Tìm kiếm địa điểm'
+                value={query}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  width: '220px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                  outline: 'none'
+                }}
+                onChange={(e) => {setQuery(e.target.value)}}
+              ></input>
+              <input
+                type='number'
+                value={zoomLevel}
+                max={99}
+                min={1}
+                style={{
+                  // marginLeft: '8px',
+                  padding: '8px 12px',
+                  // fontSize: '14px',
+                }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value < 1 || value > 99) return;
+                  setZoomLevel(Number(value))}}
+              ></input>
+              <button type='submit' style={{ display: 'none' }}>Tìm kiếm</button>
+            </form>
+          </div>
+
+          <div style={{
+            position: 'absolute',
+            top: '0',
+            right: '0',
+            zIndex: 1000,
+            display: 'flex',
+          }}>
+            <button 
+              style={{ 
+                zIndex: 1001,
+                width: '8rem',
+                height: '3rem',
+              }}
+              onClick={() => setShowDashboard(!showDashboard)}>
+              {showDashboard ? 'Ẩn Dashboard' : 'Hiện Dashboard'}
+            </button>
+            
+              <MapDashboard/>
+          </div>
+        </div>
+      </ToolsContext.Provider>
+    </MapContext.Provider>
   )
 }

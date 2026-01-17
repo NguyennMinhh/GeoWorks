@@ -13,4 +13,20 @@ backend/
 │
 └── config/ (thư mục backend cũ)
 
+W.I.P: 
+1, Thay thế API Nomination bằng API GOONG
+2, Các Tools cần thêm:
+- Đo khoảng cách đường thẳng (Đường cò bay) 
+- Đo khoảng cách đường đi (Dùng API OSRM để tìm và tính đường đi giữa 2 điểm)
+- Đo diện tích
+- 
+
+
+// :
+Về phần hiển thị các tools, và tool cụ thể ở dashboard:
+- Ta sẽ thêm 1 useState ở MapDashboard: const [selectedTool, setSelectedTool] = useState(null)
+- Nếu selectedTool === null thì hiển thị ToolsList
+- Khi nhấn vào tool nào trong ToolsList thì sẽ setSelectedTool(tên tool đó)
+- Nếu selectedTool === 'tên Tool' thì hiển thị Tool cụ thể đó
+
 

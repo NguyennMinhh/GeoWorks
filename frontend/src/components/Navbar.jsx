@@ -25,7 +25,7 @@ export default function Navbar() {
                         <>
                             {/* W.I.P */}
                             <li className={styles.navItem}>
-                                <Link to="/menu" className={styles.navLink}>Menu</Link> 
+                                <Link to="/menu" className={styles.navLink}>Dashboard</Link> 
                             </li>
                             
                             <li className={styles.navItem}>

@@ -19,7 +19,8 @@ export default function BaseMap() {
   const [currentLayer, setCurrentLayer] = useState('osm');
   const [query, setQuery] = useState('')
   const [zoomLevel, setZoomLevel] = useState(10)
-  const [showDashboard, setShowDashboard] = useState(true);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [selectedTool, setSelectedTool] = useState(null);
 
   useEffect(() => {
     // Layer Satellite của Esri
@@ -41,6 +42,7 @@ export default function BaseMap() {
 
     mapInstance.current = new Map({
       target: mapRef.current,
+      zIndex: 0,
       layers: [osmLayer, esriLayer],
       view: new View({
         center: fromLonLat([105.8342, 21.0278]),
@@ -77,7 +79,7 @@ export default function BaseMap() {
 
   return (
     <MapContext.Provider value={{ mapInstance, setCurrentLayer, currentLayer, handleSearch }}>
-      <ToolsContext.Provider value={{ query, setQuery, zoomLevel, setZoomLevel, showDashboard, setShowDashboard }}>
+      <ToolsContext.Provider value={{ query, setQuery, zoomLevel, setZoomLevel, showDashboard, setShowDashboard, selectedTool, setSelectedTool }}>
         <div style={{ position: 'relative', width: '100%', height: '94vh' }}>
           <div ref={mapRef} style={{ width: '100%', height: '100%' }}></div>
           <div style={{
@@ -129,12 +131,11 @@ export default function BaseMap() {
           }}>
             <button 
               style={{ 
-                zIndex: 1001,
                 width: '8rem',
                 height: '3rem',
               }}
-              onClick={() => setShowDashboard(!showDashboard)}>
-              {showDashboard ? 'Ẩn Dashboard' : 'Hiện Dashboard'}
+              onClick={() => setShowDashboard(true)}>
+              {'Hiện Dashboard'}
             </button>
             
               <MapDashboard/>

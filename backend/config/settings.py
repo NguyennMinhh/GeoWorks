@@ -75,10 +75,21 @@ DATABASES = {
 }
 
 # GDAL & GEOS configuration for Windows
+# if os.name == 'nt':
+#     QGIS_BIN = r'D:\MinhApp\QGIS 3.44.6\bin'
+#     os.environ['PATH'] = QGIS_BIN + os.pathsep + os.environ['PATH']
+    
+#     # Tự động tìm file gdal*.dll (311, 312, hoặc phiên bản khác)
+#     import glob
+#     gdal_files = glob.glob(os.path.join(QGIS_BIN, 'gdal*.dll'))
+#     GDAL_LIBRARY_PATH = gdal_files[0] if gdal_files else None
+    
+#     GEOS_LIBRARY_PATH = os.path.join(QGIS_BIN, 'geos_c.dll')
+
 if os.name == 'nt':
-    QGIS_BIN = r'C:\Program Files\QGIS 3.44.2\bin'
+    QGIS_BIN = r'D:\MinhApp\QGIS 3.44.6\bin'
     os.environ['PATH'] = QGIS_BIN + os.pathsep + os.environ['PATH']
-    GDAL_LIBRARY_PATH = os.path.join(QGIS_BIN, 'gdal311.dll')
+    GDAL_LIBRARY_PATH = os.path.join(QGIS_BIN, 'gdal312.dll')
     GEOS_LIBRARY_PATH = os.path.join(QGIS_BIN, 'geos_c.dll')
 
 # --- 4. Password validation ---

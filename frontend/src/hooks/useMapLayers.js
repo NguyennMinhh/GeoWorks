@@ -7,7 +7,11 @@ export const switchLayerVisible = (mapInstance, targetLayer) => {
     if(!mapInstance || !targetLayer) return;
 
     mapInstance.getLayers().forEach((layer) => {
+        // ✅ Chỉ ẩn các basemap layer, KHÔNG ẨN layer vẽ
+        const layerName = layer.get('name');
+        if (layerName === 'osm' || layerName === 'satellite') {
         layer.setVisible(false);
+        }
     });
     targetLayer?.setVisible(true);
 };

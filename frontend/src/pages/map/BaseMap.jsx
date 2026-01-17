@@ -28,12 +28,14 @@ export default function BaseMap() {
       source: new XYZ({
         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       }),
-      visible: false
+      properties: { name: 'satellite' },
+      visible: false,
     });
 
     // Layer Generic của OSM
     const osmLayer = new TileLayer({
       source: new OSM(),
+      properties: { name: 'osm' },
       visible: true
     });
 

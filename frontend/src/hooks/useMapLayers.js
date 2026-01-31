@@ -1,5 +1,5 @@
 import { fromLonLat } from "ol/proj";
-import { geocodeNominatim } from "../api";
+import { geocodeGoong } from "../api";
 import { transformExtent } from "ol/proj";
 
 // Hàm chuyển đổi visible:
@@ -17,7 +17,7 @@ export const switchLayerVisible = (mapInstance, targetLayer) => {
 };
 
 export async function searchAndZoom(query, map, zoomLevel) {
-    const result = await geocodeNominatim(query);
+    const result = await geocodeGoong(query);
     if(!result) {
         alert('Không tìm thấy kết quả');
         return;

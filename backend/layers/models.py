@@ -1,11 +1,6 @@
 from django.contrib.gis.db import models
 from core.models import TimeStampedModel
 
-
-
-
-
-
 # -  Lưu ý:
 # Map sẽ không lấy vị trí các điểm, đường, vùng từ API mỗi lần gọi, mà nó sẽ chỉ gọi 1 lần và dùng Python Scripting để lưu các dữ liệu API đó vào db, điều này giúp giảm tải cho server và tăng tốc độ phản hồi khi người dùng tương tác với bản đồ
 
@@ -26,7 +21,8 @@ from core.models import TimeStampedModel
 #     def __str__(self):
 #         return f"[{self.category}] {self.name} - {self.osm_id}"
 
-# Lớp LineString
-
-# Lớp Polygon
-
+class Warehouse(TimeStampedModel):
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=500)
+    location = models.PointField(srid=4326, geography=True)
+    is_active = models.BooleanField(default=True)

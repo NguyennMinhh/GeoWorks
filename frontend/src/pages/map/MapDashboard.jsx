@@ -13,13 +13,7 @@ export default function MapDashboard() {
       <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
         <BaseMapSwitcher />
         <button 
-          style={{ 
-            zIndex: 1001,
-            width: '8rem',
-            height: '3rem',
-            marginRight: '8px',
-            marginTop: '8px',
-          }}
+          className="w-32 h-12 m-2 bg-red-400 text-white rounded-md z-1001"
           onClick={() => setShowDashboard(false)}>
           {'Tắt Dashboard'}
         </button>

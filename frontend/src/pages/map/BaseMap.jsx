@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState, createContext } from 'react';
-import { Map, View } from "ol";
+import { Map, View, Feature } from "ol";
 import TileLayer from "ol/layer/Tile.js";
 import OSM from 'ol/source/OSM.js';
 import XYZ from 'ol/source/XYZ.js';
-import { switchLayerVisible, searchAndZoom } from '../../hooks/useMapLayers'
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import { switchLayerVisible } from '../../hooks/useMapLayers'
 import { fromLonLat } from 'ol/proj';
+import { Point } from 'ol/geom';
+import { Style, Circle, Fill, Stroke } from 'ol/style';
+import { geocodeGoong } from '../../api';
 
 import MapDashboard from './MapDashboard';
 
@@ -39,13 +44,20 @@ export default function BaseMap() {
       visible: true
     });
 
+    // Tạo một layer persistent để vẽ các feature (giữ khi component tool unmount)
+    const drawingSource = new VectorSource();
+    const drawingLayer = new VectorLayer({
+      source: drawingSource,
+      zIndex: 1000,
+    });
+
     // Lưu reference
-    layersRef.current = { osmLayer, esriLayer };
+    layersRef.current = { osmLayer, esriLayer, drawingLayer, drawingSource };
 
     mapInstance.current = new Map({
       target: mapRef.current,
       zIndex: 0,
-      layers: [osmLayer, esriLayer],
+      layers: [osmLayer, esriLayer, drawingLayer],
       view: new View({
         center: fromLonLat([105.8342, 21.0278]),
         zoom: 6,
@@ -72,7 +84,39 @@ export default function BaseMap() {
     const q = query && query.trim();
     if (!q) return;
     try {
-      searchAndZoom(q, mapInstance.current, zoomLevel)
+      const result = await geocodeGoong(q);
+      if (!result) {
+        alert('Không tìm thấy kết quả');
+        return;
+      }
+
+      const coords = fromLonLat([result.lon, result.lat]);
+      mapInstance.current.getView().animate({ center: coords, zoom: zoomLevel, duration: 600 });
+
+      const source = layersRef.current?.drawingSource;
+      if (!source) return;
+
+      // Đang học đến đây:
+      // Xoá mark tìm kiếm cũ (tạm thời)
+      source.getFeatures()
+        .filter((f) => f.get('type') === 'search_marker')
+        .forEach((f) => source.removeFeature(f));
+
+      // Tạo mark mới tại vị trí tìm kiếm
+      const marker = new Feature({
+        geometry: new Point(coords),
+      });
+      marker.set('type', 'search_marker');
+      marker.setStyle(
+        new Style({
+          image: new Circle({
+            radius: 7,
+            fill: new Fill({ color: '#ef4444' }), // đỏ
+            stroke: new Stroke({ color: '#ffffff', width: 2 }), // viền trắng
+          }),
+        })
+      );
+      source.addFeature(marker);
     } catch (err) {
       console.error(err);
       alert('Lỗi khi tìm kiếm');
@@ -80,47 +124,31 @@ export default function BaseMap() {
   }
 
   return (
-    <MapContext.Provider value={{ mapInstance, setCurrentLayer, currentLayer, handleSearch }}>
+    <MapContext.Provider value={{ mapInstance, setCurrentLayer, currentLayer, handleSearch, drawingLayer: layersRef.current?.drawingLayer, drawingSource: layersRef.current?.drawingSource }}>
       <ToolsContext.Provider value={{ query, setQuery, zoomLevel, setZoomLevel, showDashboard, setShowDashboard, selectedTool, setSelectedTool }}>
         <div style={{ position: 'relative', width: '100%', height: '94vh' }}>
           <div ref={mapRef} style={{ width: '100%', height: '100%' }}></div>
-          <div style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '4rem',
-            display: 'flex',
-          }}>
-            <form onSubmit={handleSearch}>
+          <div className="absolute top-4 left-16 flex">
+            <form onSubmit={handleSearch} className="flex items-center gap-2">
               <input 
                 type='text'
-                placeholder='Tìm kiếm địa điểm'
+                placeholder='Tìm kiếm địa điểm...'
                 value={query}
-                style={{
-                  padding: '8px 12px',
-                  fontSize: '14px',
-                  width: '220px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  outline: 'none'
-                }}
+                className="px-3 py-2 text-sm w-64 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 onChange={(e) => {setQuery(e.target.value)}}
-              ></input>
+              />
               <input
                 type='number'
                 value={zoomLevel}
                 max={99}
                 min={1}
-                style={{
-                  // marginLeft: '8px',
-                  padding: '8px 12px',
-                  // fontSize: '14px',
-                }}
+                className="px-3 py-2 w-20 rounded border border-gray-300 focus:outline-none"
                 onChange={(e) => {
-                  const value = e.target.value;
+                  const value = Number(e.target.value);
                   if (value < 1 || value > 99) return;
-                  setZoomLevel(Number(value))}}
-              ></input>
-              <button type='submit' style={{ display: 'none' }}>Tìm kiếm</button>
+                  setZoomLevel(value)}}
+              />
+              <button type='submit' className="px-3 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700">Tìm</button>
             </form>
           </div>
 
@@ -132,10 +160,7 @@ export default function BaseMap() {
             display: 'flex',
           }}>
             <button 
-              style={{ 
-                width: '8rem',
-                height: '3rem',
-              }}
+              className='bg-gray-500 rounded-md w-32 h-12 m-2 text-white'
               onClick={() => setShowDashboard(true)}>
               {'Hiện Dashboard'}
             </button>

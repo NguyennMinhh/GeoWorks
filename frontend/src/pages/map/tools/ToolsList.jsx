@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { ToolsContext } from "../BaseMap";
-import GetStraightDistanceTool from './ToolItem';
+import { StraightDistanceTool, GetMoveWayTool } from './CalculateTool';
+import { compose } from "ol/transform";
 
 const TOOLS = [
   {
@@ -18,7 +19,7 @@ const TOOLS = [
     code: "get_straight_distance",
     name: "Đo khoảng cách",
     description: "Đo khoảng cách giữa 2 điểm (Programming Demo)",
-    component: GetStraightDistanceTool
+    component: StraightDistanceTool
   },
   {
     id: 4,
@@ -38,7 +39,9 @@ const TOOLS = [
   {
     id: 7,
     name: "Tìm đường đi giữa 2 điểm",
-    description: "Tìm đường đi ngắn nhất giữa 2 điểm trên bản đồ và hiển thị thông số (W.I.P)"
+    code: "get_move_way",
+    description: "Tìm đường đi ngắn nhất giữa 2 điểm trên bản đồ và hiển thị thông số (W.I.P)",
+    component: GetMoveWayTool
   },
   {
     id: 8,
@@ -111,7 +114,8 @@ export default function ToolsList() {
       )}
 
       {/* Nếu đã chọn tool → Hiển thị tool đó */}
-      {selectedTool === "get_straight_distance" && <GetStraightDistanceTool />}
+      {selectedTool === "get_straight_distance" && <StraightDistanceTool />}
+      {selectedTool === "get_move_way" && <GetMoveWayTool />}
       
       {/* Nút quay lại */}
       {selectedTool && (

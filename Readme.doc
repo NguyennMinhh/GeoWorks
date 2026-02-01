@@ -1,32 +1,4 @@
-backend/
-├── core/                   <-- (Quan trọng) Chứa abstract models, utils dùng chung
-├── users/                  <-- Quản lý User, Auth, JWT
-├── layers/ (hoặc maps)     <-- Thay cho 'gis_app'. Chỉ lo việc CRUD dữ liệu bản đồ
-│   ├── models.py           <-- Chứa Shapefile, Point, Polygon
-│   ├── serializers.py
-│   └── views.py            <-- Chỉ view dữ liệu (GET, POST đơn giản)
-│
-├── analysis/ (hoặc tools)  <-- Thay cho 'gis_tool'. Nơi chứa "chất xám" Automation
-│   ├── services.py         <-- Viết logic Python thuần ở đây (Scripting)
-│   ├── tasks.py            <-- (Nâng cao) Chứa Celery tasks để chạy nền
-│   └── views.py            <-- API kích hoạt tool (VD: /api/analyze/buffer/)
-│
-└── config/ (thư mục backend cũ)
+Project E-Commerce quản lý đơn đặt hàng, giao hàng, vị trí đơn hàng và shipper. Qua đó giúp tối ưu quản lý và vận chuyển đơn hàng.
+Từ các dữ liệu đó, thêm các lớp layers và công cụ để phân tích không gian.
 
-W.I.P: 
-1, Thay thế API Nomination bằng API GOONG
-2, Các Tools cần thêm:
-- Đo khoảng cách đường thẳng (Đường cò bay) 
-- Đo khoảng cách đường đi (Dùng API OSRM để tìm và tính đường đi giữa 2 điểm)
-- Đo diện tích
-- 
-
-
-// :
-Về phần hiển thị các tools, và tool cụ thể ở dashboard:
-- Ta sẽ thêm 1 useState ở MapDashboard: const [selectedTool, setSelectedTool] = useState(null)
-- Nếu selectedTool === null thì hiển thị ToolsList
-- Khi nhấn vào tool nào trong ToolsList thì sẽ setSelectedTool(tên tool đó)
-- Nếu selectedTool === 'tên Tool' thì hiển thị Tool cụ thể đó
-
-
+(W.I.P)
